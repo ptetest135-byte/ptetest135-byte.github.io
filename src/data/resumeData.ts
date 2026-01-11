@@ -76,6 +76,7 @@ export const resumeData = {
         "Assist in the deployment and configuration of new IT and Security software and hardware.",
         "Work with the Information Security Manager to ensure adherence to security policies and procedures.",
         "Assist in the investigation and resolution of security incidents, such as malware attacks and phishing attempts.",
+        "Manage and support mobility fleet including mobile devices, tablets, and related MDM solutions.",
       ],
     },
     {

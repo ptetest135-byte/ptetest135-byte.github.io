@@ -1,50 +1,138 @@
-import { Mail, Phone, MapPin, Linkedin, Download, Monitor, Server, Wifi, HardDrive, Cpu } from "lucide-react";
+import { MapPin, Linkedin, Download, Monitor, Server, Wifi, HardDrive, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { resumeData } from "@/data/resumeData";
+import jsPDF from "jspdf";
 
 const Hero = () => {
   const handleDownloadResume = () => {
-    // Create resume content
-    const resumeContent = `
-${resumeData.name}
-${resumeData.title}
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    const contentWidth = pageWidth - margin * 2;
+    let y = 20;
 
-CONTACT
-Email: ${resumeData.contact.email}
-Phone: ${resumeData.contact.phone}
-Location: ${resumeData.contact.location}
-LinkedIn: ${resumeData.contact.linkedin}
+    // Helper function to add text with word wrap
+    const addWrappedText = (text: string, x: number, startY: number, maxWidth: number, lineHeight: number) => {
+      const lines = doc.splitTextToSize(text, maxWidth);
+      doc.text(lines, x, startY);
+      return startY + lines.length * lineHeight;
+    };
 
-PROFESSIONAL SUMMARY
-${resumeData.summary}
+    // Header
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.text(resumeData.name, pageWidth / 2, y, { align: "center" });
+    y += 10;
 
-TECHNICAL SKILLS
-${resumeData.technicalSkills.map(skill => `${skill.category}: ${skill.skills.join(", ")}`).join("\n")}
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "normal");
+    doc.text(resumeData.title, pageWidth / 2, y, { align: "center" });
+    y += 8;
 
-CORE ABILITIES
-${resumeData.coreAbilities.join(" | ")}
+    // Contact info
+    doc.setFontSize(10);
+    doc.text(`${resumeData.contact.location} | LinkedIn: linkedin.com/in/biswash-shrestha`, pageWidth / 2, y, { align: "center" });
+    y += 12;
 
-EXPERIENCE
-${resumeData.experience.map(exp => `
-${exp.title} - ${exp.company}
-${exp.period} | ${exp.location}
-${exp.description}
-${exp.highlights.length > 0 ? exp.highlights.map(h => `• ${h}`).join("\n") : ""}
-`).join("\n")}
+    // Divider
+    doc.setDrawColor(100, 100, 100);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 8;
 
-EDUCATION
-${resumeData.education.map(edu => `${edu.degree} in ${edu.major}${edu.subMajor ? ` (${edu.subMajor})` : ""} - ${edu.institution}, ${edu.year}`).join("\n")}
-    `.trim();
+    // Professional Summary
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("PROFESSIONAL SUMMARY", margin, y);
+    y += 6;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    y = addWrappedText(resumeData.summary, margin, y, contentWidth, 5);
+    y += 8;
 
-    const blob = new Blob([resumeContent], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${resumeData.name.replace(/\s+/g, "_")}_Resume.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Technical Skills
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("TECHNICAL SKILLS", margin, y);
+    y += 6;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    resumeData.technicalSkills.forEach((skill) => {
+      const skillText = `${skill.category}: ${skill.skills.join(", ")}`;
+      y = addWrappedText(skillText, margin, y, contentWidth, 5);
+      y += 2;
+    });
+    y += 6;
+
+    // Core Abilities
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("CORE ABILITIES", margin, y);
+    y += 6;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    y = addWrappedText(resumeData.coreAbilities.join(" • "), margin, y, contentWidth, 5);
+    y += 8;
+
+    // Experience
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("PROFESSIONAL EXPERIENCE", margin, y);
+    y += 6;
+
+    resumeData.experience.forEach((exp) => {
+      // Check if we need a new page
+      if (y > 260) {
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.text(exp.title, margin, y);
+      y += 5;
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`${exp.company} | ${exp.period}`, margin, y);
+      y += 5;
+      doc.text(exp.location, margin, y);
+      y += 5;
+      y = addWrappedText(exp.description, margin, y, contentWidth, 5);
+      y += 3;
+
+      if (exp.highlights.length > 0) {
+        exp.highlights.forEach((highlight) => {
+          if (y > 270) {
+            doc.addPage();
+            y = 20;
+          }
+          y = addWrappedText(`• ${highlight}`, margin + 5, y, contentWidth - 5, 5);
+          y += 2;
+        });
+      }
+      y += 5;
+    });
+
+    // Education
+    if (y > 250) {
+      doc.addPage();
+      y = 20;
+    }
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("EDUCATION", margin, y);
+    y += 6;
+
+    resumeData.education.forEach((edu) => {
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.text(`${edu.degree} in ${edu.major}`, margin, y);
+      y += 5;
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`${edu.subMajor ? `Sub-major: ${edu.subMajor} | ` : ""}${edu.institution} | ${edu.year}`, margin, y);
+    });
+
+    doc.save(`${resumeData.name.replace(/\s+/g, "_")}_Resume.pdf`);
   };
 
   return (
@@ -92,26 +180,8 @@ ${resumeData.education.map(edu => `${edu.degree} in ${edu.major}${edu.subMajor ?
             </span>
           </div>
 
-          {/* Contact info */}
+          {/* Contact info - Location and LinkedIn only */}
           <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-10">
-            <a
-              href={`mailto:${resumeData.contact.email}`}
-              className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors group"
-            >
-              <div className="p-2 rounded-lg bg-primary-foreground/10 group-hover:bg-primary-foreground/20 transition-colors">
-                <Mail className="w-4 h-4" />
-              </div>
-              <span className="text-sm">{resumeData.contact.email}</span>
-            </a>
-            <a
-              href={`tel:${resumeData.contact.phone}`}
-              className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors group"
-            >
-              <div className="p-2 rounded-lg bg-primary-foreground/10 group-hover:bg-primary-foreground/20 transition-colors">
-                <Phone className="w-4 h-4" />
-              </div>
-              <span className="text-sm">{resumeData.contact.phone}</span>
-            </a>
             <div className="flex items-center gap-2 text-primary-foreground/80">
               <div className="p-2 rounded-lg bg-primary-foreground/10">
                 <MapPin className="w-4 h-4" />

@@ -29,7 +29,7 @@ const About = () => {
               </p>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10 pt-10 border-t border-border">
+              <div className="grid grid-cols-3 gap-6 mt-10 pt-10 border-t border-border">
                 <div className="text-center">
                   <div className="text-3xl md:text-4xl font-bold text-primary mb-2">3+</div>
                   <div className="text-sm text-muted-foreground">Years Experience</div>
@@ -41,10 +41,6 @@ const About = () => {
                 <div className="text-center">
                   <div className="text-3xl md:text-4xl font-bold text-primary mb-2">100+</div>
                   <div className="text-sm text-muted-foreground">End Users</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-primary mb-2">24/7</div>
-                  <div className="text-sm text-muted-foreground">Support Ready</div>
                 </div>
               </div>
             </div>
