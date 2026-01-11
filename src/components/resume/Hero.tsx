@@ -7,9 +7,15 @@ const Hero = () => {
   const handleDownloadResume = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
     const contentWidth = pageWidth - margin * 2;
-    let y = 20;
+    let y = 15;
+
+    // Colors
+    const primaryColor: [number, number, number] = [30, 41, 59]; // slate-800
+    const accentColor: [number, number, number] = [59, 130, 246]; // blue-500
+    const mutedColor: [number, number, number] = [100, 116, 139]; // slate-500
 
     // Helper function to add text with word wrap
     const addWrappedText = (text: string, x: number, startY: number, maxWidth: number, lineHeight: number) => {
@@ -18,119 +24,185 @@ const Hero = () => {
       return startY + lines.length * lineHeight;
     };
 
-    // Header
-    doc.setFontSize(24);
-    doc.setFont("helvetica", "bold");
-    doc.text(resumeData.name, pageWidth / 2, y, { align: "center" });
-    y += 10;
+    // Helper to draw section header with line
+    const drawSectionHeader = (title: string, yPos: number) => {
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...accentColor);
+      doc.text(title, margin, yPos);
+      doc.setDrawColor(...accentColor);
+      doc.setLineWidth(0.5);
+      doc.line(margin, yPos + 2, pageWidth - margin, yPos + 2);
+      doc.setTextColor(...primaryColor);
+      return yPos + 8;
+    };
 
-    doc.setFontSize(14);
+    // Header background
+    doc.setFillColor(30, 41, 59);
+    doc.rect(0, 0, pageWidth, 45, "F");
+
+    // Name
+    doc.setFontSize(26);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(255, 255, 255);
+    doc.text(resumeData.name, pageWidth / 2, 18, { align: "center" });
+
+    // Title
+    doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(resumeData.title, pageWidth / 2, y, { align: "center" });
-    y += 8;
+    doc.setTextColor(200, 200, 200);
+    doc.text(resumeData.title, pageWidth / 2, 27, { align: "center" });
 
     // Contact info
-    doc.setFontSize(10);
-    doc.text(`${resumeData.contact.location} | LinkedIn: linkedin.com/in/biswash-shrestha`, pageWidth / 2, y, { align: "center" });
-    y += 12;
+    doc.setFontSize(9);
+    doc.setTextColor(180, 180, 180);
+    doc.text(`${resumeData.contact.location}  •  linkedin.com/in/biswash-shrestha`, pageWidth / 2, 36, { align: "center" });
 
-    // Divider
-    doc.setDrawColor(100, 100, 100);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 8;
+    y = 55;
 
     // Professional Summary
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("PROFESSIONAL SUMMARY", margin, y);
-    y += 6;
-    doc.setFontSize(10);
+    doc.setTextColor(...primaryColor);
+    y = drawSectionHeader("PROFESSIONAL SUMMARY", y);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    y = addWrappedText(resumeData.summary, margin, y, contentWidth, 5);
+    doc.setTextColor(...mutedColor);
+    y = addWrappedText(resumeData.summary, margin, y, contentWidth, 4.5);
     y += 8;
 
-    // Technical Skills
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("TECHNICAL SKILLS", margin, y);
-    y += 6;
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
+    // Two column layout for skills
+    const colWidth = (contentWidth - 10) / 2;
+    const leftColX = margin;
+    const rightColX = margin + colWidth + 10;
+    let leftY = y;
+    let rightY = y;
+
+    // Technical Skills (left column)
+    doc.setTextColor(...primaryColor);
+    leftY = drawSectionHeader("TECHNICAL SKILLS", leftY);
+    doc.setFontSize(8);
     resumeData.technicalSkills.forEach((skill) => {
-      const skillText = `${skill.category}: ${skill.skills.join(", ")}`;
-      y = addWrappedText(skillText, margin, y, contentWidth, 5);
-      y += 2;
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...primaryColor);
+      doc.text(skill.category + ":", leftColX, leftY);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...mutedColor);
+      leftY = addWrappedText(skill.skills.join(", "), leftColX, leftY + 4, colWidth, 4);
+      leftY += 2;
     });
-    y += 6;
 
-    // Core Abilities
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("CORE ABILITIES", margin, y);
-    y += 6;
-    doc.setFontSize(10);
+    // Core Abilities (right column)
+    rightY = drawSectionHeader("CORE ABILITIES", rightY);
+    doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    y = addWrappedText(resumeData.coreAbilities.join(" • "), margin, y, contentWidth, 5);
-    y += 8;
+    doc.setTextColor(...mutedColor);
+    resumeData.coreAbilities.forEach((ability) => {
+      doc.setFillColor(...accentColor);
+      doc.circle(rightColX + 2, rightY - 1.5, 1, "F");
+      doc.text(ability, rightColX + 6, rightY);
+      rightY += 5;
+    });
+
+    // Certification
+    rightY += 5;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...accentColor);
+    doc.text("CERTIFICATION", rightColX, rightY);
+    rightY += 5;
+    resumeData.certifications.forEach((cert) => {
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...primaryColor);
+      doc.text(cert.code, rightColX, rightY);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...mutedColor);
+      doc.text(` - ${cert.name}`, rightColX + doc.getTextWidth(cert.code), rightY);
+      rightY += 4;
+    });
+
+    y = Math.max(leftY, rightY) + 8;
 
     // Experience
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("PROFESSIONAL EXPERIENCE", margin, y);
-    y += 6;
+    y = drawSectionHeader("PROFESSIONAL EXPERIENCE", y);
 
-    resumeData.experience.forEach((exp) => {
-      // Check if we need a new page
-      if (y > 260) {
+    resumeData.experience.filter(exp => exp.highlighted).forEach((exp) => {
+      if (y > pageHeight - 40) {
         doc.addPage();
         y = 20;
       }
 
-      doc.setFontSize(11);
-      doc.setFont("helvetica", "bold");
-      doc.text(exp.title, margin, y);
-      y += 5;
+      // Job title with accent
       doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...primaryColor);
+      doc.text(exp.title, margin, y);
+      
+      // Company and period on same line
+      doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
-      doc.text(`${exp.company} | ${exp.period}`, margin, y);
-      y += 5;
-      doc.text(exp.location, margin, y);
-      y += 5;
-      y = addWrappedText(exp.description, margin, y, contentWidth, 5);
+      doc.setTextColor(...accentColor);
+      doc.text(exp.company, margin, y + 5);
+      doc.setTextColor(...mutedColor);
+      doc.text(`${exp.period}  •  ${exp.location}`, margin, y + 10);
+      y += 15;
+
+      // Description
+      doc.setFontSize(8);
+      doc.setTextColor(...mutedColor);
+      y = addWrappedText(exp.description, margin, y, contentWidth, 4);
       y += 3;
 
+      // Highlights (limited to first 4)
       if (exp.highlights.length > 0) {
-        exp.highlights.forEach((highlight) => {
-          if (y > 270) {
+        const limitedHighlights = exp.highlights.slice(0, 4);
+        limitedHighlights.forEach((highlight) => {
+          if (y > pageHeight - 20) {
             doc.addPage();
             y = 20;
           }
-          y = addWrappedText(`• ${highlight}`, margin + 5, y, contentWidth - 5, 5);
-          y += 2;
+          doc.setFillColor(...accentColor);
+          doc.circle(margin + 2, y - 1.5, 0.8, "F");
+          y = addWrappedText(highlight, margin + 6, y, contentWidth - 6, 4);
+          y += 1;
         });
       }
-      y += 5;
+      y += 6;
     });
 
     // Education
-    if (y > 250) {
+    if (y > pageHeight - 50) {
       doc.addPage();
       y = 20;
     }
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("EDUCATION", margin, y);
-    y += 6;
+    y = drawSectionHeader("EDUCATION", y);
 
     resumeData.education.forEach((edu) => {
-      doc.setFontSize(11);
+      doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
+      doc.setTextColor(...primaryColor);
       doc.text(`${edu.degree} in ${edu.major}`, margin, y);
       y += 5;
-      doc.setFontSize(10);
+      doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
-      doc.text(`${edu.subMajor ? `Sub-major: ${edu.subMajor} | ` : ""}${edu.institution} | ${edu.year}`, margin, y);
+      doc.setTextColor(...mutedColor);
+      doc.text(`${edu.subMajor ? `Sub-major: ${edu.subMajor}  •  ` : ""}${edu.institution}  •  ${edu.year}`, margin, y);
+      y += 8;
     });
+
+    // Languages
+    y += 2;
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...accentColor);
+    doc.text("LANGUAGES: ", margin, y);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...mutedColor);
+    doc.text(resumeData.languages.join(", "), margin + doc.getTextWidth("LANGUAGES: "), y);
+
+    // Footer line
+    doc.setDrawColor(...accentColor);
+    doc.setLineWidth(2);
+    doc.line(0, pageHeight - 5, pageWidth, pageHeight - 5);
 
     doc.save(`${resumeData.name.replace(/\s+/g, "_")}_Resume.pdf`);
   };

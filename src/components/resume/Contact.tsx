@@ -1,5 +1,5 @@
 import { resumeData } from "@/data/resumeData";
-import { Mail, Phone, MapPin, Linkedin, Send } from "lucide-react";
+import { MapPin, Linkedin, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Contact = () => {
@@ -20,29 +20,7 @@ const Contact = () => {
           </p>
 
           {/* Contact cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <a
-              href={`mailto:${resumeData.contact.email}`}
-              className="group bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-6 border border-primary-foreground/20 hover:bg-primary-foreground/20 transition-all hover:scale-105"
-            >
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary-foreground/20 flex items-center justify-center group-hover:bg-primary-foreground/30 transition-colors">
-                <Mail className="w-5 h-5" />
-              </div>
-              <div className="text-sm text-primary-foreground/70 mb-1">Email</div>
-              <div className="font-medium text-sm">{resumeData.contact.email}</div>
-            </a>
-
-            <a
-              href={`tel:${resumeData.contact.phone}`}
-              className="group bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-6 border border-primary-foreground/20 hover:bg-primary-foreground/20 transition-all hover:scale-105"
-            >
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary-foreground/20 flex items-center justify-center group-hover:bg-primary-foreground/30 transition-colors">
-                <Phone className="w-5 h-5" />
-              </div>
-              <div className="text-sm text-primary-foreground/70 mb-1">Phone</div>
-              <div className="font-medium text-sm">{resumeData.contact.phone}</div>
-            </a>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto mb-12">
             <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-6 border border-primary-foreground/20">
               <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary-foreground/20 flex items-center justify-center">
                 <MapPin className="w-5 h-5" />
@@ -61,7 +39,7 @@ const Contact = () => {
                 <Linkedin className="w-5 h-5" />
               </div>
               <div className="text-sm text-primary-foreground/70 mb-1">LinkedIn</div>
-              <div className="font-medium text-sm">Connect</div>
+              <div className="font-medium text-sm">Connect with me</div>
             </a>
           </div>
 
@@ -71,8 +49,8 @@ const Contact = () => {
             className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-black/20 transition-all hover:scale-105"
             asChild
           >
-            <a href={`mailto:${resumeData.contact.email}`}>
-              <Send className="w-5 h-5 mr-2" />
+            <a href={resumeData.contact.linkedin} target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="w-5 h-5 mr-2" />
               Send Me a Message
             </a>
           </Button>

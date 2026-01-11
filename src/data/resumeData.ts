@@ -57,6 +57,13 @@ export const resumeData = {
       "Meticulous attention to detail",
     ],
   },
+  certifications: [
+    {
+      name: "Microsoft Azure Fundamentals",
+      code: "AZ-900",
+      issuer: "Microsoft",
+    },
+  ],
   experience: [
     {
       title: "IT Support Specialist",
@@ -78,6 +85,7 @@ export const resumeData = {
         "Assist in the investigation and resolution of security incidents, such as malware attacks and phishing attempts.",
         "Manage and support mobility fleet including mobile devices, tablets, and related MDM solutions.",
       ],
+      highlighted: true,
     },
     {
       title: "IT Support Analyst (Contract)",
@@ -93,6 +101,20 @@ export const resumeData = {
         "Maintained IT asset inventory and administered systems including Office365, Active Directory, and Jira Service Management.",
         "Documented support processes, contributed to user training materials, and identified opportunities for IT service improvements.",
       ],
+      highlighted: true,
+    },
+    {
+      title: "EME Engineer",
+      company: "Nokia Solutions & Networks (Contract)",
+      period: "Aug 2022 - Jul 2024",
+      location: "Macquarie Park, NSW, Australia",
+      description: "Recruited as EME Engineer to assess compliance and mitigate the wireless telecommunication sites.",
+      highlights: [
+        "Assessed wireless telecommunication sites for EME compliance, providing solutions to reduce risks in mobile carrier installations.",
+        "Reviewed design documents, including Antenna Systems and Plumbing Diagrams.",
+        "Conducted site visits and created site drawings using RF modelling software (IXUS), applying detailed technical skills.",
+      ],
+      highlighted: false,
     },
     {
       title: "IT Support Specialist",
@@ -108,7 +130,25 @@ export const resumeData = {
         "Onboarding/offboarding of end-users and asset management.",
         "Managed inventory and facilitated hardware procurement, ensuring the meticulous upkeep of the asset database.",
         "Provided basic support of web-based applications and troubleshooting various used software to end-users like SAP, Salesforce, antivirus McAfee, Pulse VPN, O365 and others.",
+        "Utilized ServiceNow ticketing system to proactively manage and own incidents and requests.",
+        "Conducted training sessions for new hires during their IT induction.",
       ],
+      highlighted: true,
+    },
+    {
+      title: "Systems Engineer",
+      company: "Sublime International Pvt Ltd",
+      period: "Jan 2016 - Aug 2016",
+      location: "Kathmandu, Nepal",
+      description: "Recruited as System Engineer to configure, support and manage Security System of clients.",
+      highlights: [
+        "Oversaw the technical department, managing the installation, troubleshooting and configuration of various Security Systems.",
+        "Conducted training sessions for the Marketing and Sales teams, providing comprehensive technical specifications.",
+        "Ensured adherence to precise product quality and specifications required by clients.",
+        "Conducted site surveys and system planning, meticulously studying customer requirements.",
+        "Provided leadership to technicians during on-site operations.",
+      ],
+      highlighted: false,
     },
   ],
   education: [
@@ -120,4 +160,5 @@ export const resumeData = {
       year: "2018",
     },
   ],
+  languages: ["English", "Nepali", "Newari"],
 };
