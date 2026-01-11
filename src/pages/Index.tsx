@@ -1,13 +1,20 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import Hero from "@/components/resume/Hero";
+import About from "@/components/resume/About";
+import Skills from "@/components/resume/Skills";
+import Experience from "@/components/resume/Experience";
+import Education from "@/components/resume/Education";
+import Contact from "@/components/resume/Contact";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <main className="min-h-screen">
+      <Hero />
+      <About />
+      <Skills />
+      <Experience />
+      <Education />
+      <Contact />
+    </main>
   );
 };
 
