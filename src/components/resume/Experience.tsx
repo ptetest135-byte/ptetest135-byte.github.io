@@ -58,17 +58,16 @@ const Experience = () => {
                       onMouseEnter={() => setExpandedIndex(index)}
                       onMouseLeave={() => setExpandedIndex(null)}
                     >
-                      {/* Highlighted badge */}
-                      {isHighlighted && (
-                        <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-3 ${index % 2 === 0 ? "md:float-right md:ml-3" : ""
-                          }`}>
-                          <Star className="w-3 h-3 fill-current" />
-                          Featured Role
-                        </div>
-                      )}
-
                       {/* Job header */}
                       <div className={`flex flex-col gap-2 mb-4 ${index % 2 === 0 ? "md:items-end" : "md:items-start"} ${isHighlighted ? "" : ""}`}>
+                        {/* Highlighted badge moved here */}
+                        {isHighlighted && (
+                          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-1">
+                            <Star className="w-3 h-3 fill-current" />
+                            Featured Role
+                          </div>
+                        )}
+
                         <div className="flex items-center gap-2 text-primary">
                           <Briefcase className="w-4 h-4" />
                           <h3 className="font-bold text-lg">{job.title}</h3>
