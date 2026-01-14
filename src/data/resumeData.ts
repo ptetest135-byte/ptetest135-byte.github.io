@@ -1,26 +1,87 @@
 export const resumeData = {
-  name: "Biswash Shrestha",
-  title: "IT Support Specialist",
-  contact: {
-    phone: "0432831405",
-    email: "shrebis@gmail.com",
-    location: "Sydney, Australia",
-    linkedin: "https://linkedin.com/in/biswash-shrestha",
+  "name": "Biswash Shrestha",
+  "title": "IT Support Specialist",
+  "contact": {
+    "phone": "0432831405",
+    "email": "shrebis@gmail.com",
+    "location": "Sydney, Australia",
+    "linkedin": "https://linkedin.com/in/biswash-shrestha"
   },
-  summary:
-    "Experienced IT Support Specialist with over 3 years in technical support and customer service, skilled in troubleshooting, network management, and AV technology. Currently supporting epay Australia ANZ end users for smooth operation of entity. I have developed strong skills in identifying and solving problems related to hardware, software, and networks. Proficient in Active Directory, Networking, Microsoft Intune, Office 365, and service ticketing platforms like ServiceNow and Jira. Recognized for adaptability, problem-solving abilities, and a proactive approach to evolving IT trends, I am enthusiastic about contributing to a dynamic IT team.",
-  technicalSkills: [
-    { category: "Operating Systems", skills: ["Microsoft Windows", "MacOS"] },
-    { category: "Networking", skills: ["DHCP", "DNS", "TCP/IP", "Router", "Switches"] },
-    { category: "Applications", skills: ["Microsoft Office 365", "Desktop Apps", "ZOOM", "MS Teams", "Intune"] },
-    { category: "MDM", skills: ["Active Directory", "RSAT"] },
-    { category: "Virtual Technologies", skills: ["VMware"] },
-    { category: "Ticketing", skills: ["ServiceNow", "Jira"] },
-    { category: "Backup Technologies", skills: ["Windows Backup", "CrashPlan"] },
-    { category: "Hardware & Network", skills: ["Installation", "Upgrade", "Assembly", "Configuration", "Maintenance"] },
-    { category: "AV", skills: ["Polycom AV Equipment", "Webex"] },
+  "summary": "Experienced IT Support Specialist with over 3 years in technical support and customer service, skilled in troubleshooting, network management, and AV technology. Currently supporting epay Australia ANZ end users for smooth operation of entity. I have developed strong skills in identifying and solving problems related to hardware, software, and networks. Proficient in Active Directory, Networking, Microsoft Intune, Office 365, and service ticketing platforms like ServiceNow and Jira. Recognized for adaptability, problem-solving abilities, and a proactive approach to evolving IT trends, I am enthusiastic about contributing to a dynamic IT team.",
+  "technicalSkills": [
+    {
+      "category": "Operating Systems",
+      "skills": [
+        "Microsoft Windows",
+        "MacOS"
+      ]
+    },
+    {
+      "category": "Networking",
+      "skills": [
+        "DHCP",
+        "DNS",
+        "TCP/IP",
+        "Router",
+        "Switches"
+      ]
+    },
+    {
+      "category": "Applications",
+      "skills": [
+        "Microsoft Office 365",
+        "Desktop Apps",
+        "ZOOM",
+        "MS Teams",
+        "Intune"
+      ]
+    },
+    {
+      "category": "MDM",
+      "skills": [
+        "Active Directory",
+        "RSAT"
+      ]
+    },
+    {
+      "category": "Virtual Technologies",
+      "skills": [
+        "VMware"
+      ]
+    },
+    {
+      "category": "Ticketing",
+      "skills": [
+        "ServiceNow",
+        "Jira"
+      ]
+    },
+    {
+      "category": "Backup Technologies",
+      "skills": [
+        "Windows Backup",
+        "CrashPlan"
+      ]
+    },
+    {
+      "category": "Hardware & Network",
+      "skills": [
+        "Installation",
+        "Upgrade",
+        "Assembly",
+        "Configuration",
+        "Maintenance"
+      ]
+    },
+    {
+      "category": "AV",
+      "skills": [
+        "Polycom AV Equipment",
+        "Webex"
+      ]
+    }
   ],
-  coreAbilities: [
+  "coreAbilities": [
     "Communication",
     "Problem-Solving",
     "Adaptability",
@@ -30,16 +91,16 @@ export const resumeData = {
     "Time Management",
     "Leadership",
     "Critical Thinking",
-    "Eager to Learning",
+    "Eager to Learning"
   ],
-  professionalSkills: {
-    communication: [
+  "professionalSkills": {
+    "communication": [
       "Highly Numerate",
       "Empowered decision making",
       "Strong oral and written skills",
-      "Fosters Open Communication",
+      "Fosters Open Communication"
     ],
-    personalEffectiveness: [
+    "personalEffectiveness": [
       "Acts with integrity",
       "Demonstrates adaptability",
       "Detail orientation",
@@ -47,31 +108,31 @@ export const resumeData = {
       "Works well under pressure",
       "Sensitive to cultural differences",
       "Solves problems and offers solutions",
-      "Innovative and flexible thinking",
+      "Innovative and flexible thinking"
     ],
-    interpersonal: [
+    "interpersonal": [
       "Excellent customer service skills",
       "Ability to prioritize tasks and manage time effectively",
       "Ability to work collaboratively with team members",
       "Flexibility to adapt to changing technologies",
-      "Meticulous attention to detail",
-    ],
+      "Meticulous attention to detail"
+    ]
   },
-  certifications: [
+  "certifications": [
     {
-      name: "Microsoft Azure Fundamentals",
-      code: "AZ-900",
-      issuer: "Microsoft",
-    },
+      "name": "Microsoft Azure Fundamentals",
+      "code": "AZ-900",
+      "issuer": "Microsoft"
+    }
   ],
-  experience: [
+  "experience": [
     {
-      title: "IT Support Specialist",
-      company: "epay Australia Pty Ltd",
-      period: "Feb 2025 - Present",
-      location: "Sydney, NSW 2000",
-      description: "Providing first and second-level technical support to users, ensuring a smooth operation of IT infrastructure, and resolving hardware and software issues.",
-      highlights: [
+      "title": "IT Support Specialist",
+      "company": "epay Australia Pty Ltd",
+      "period": "Feb 2025 - Present",
+      "location": "Sydney, NSW 2000",
+      "description": "Providing first and second-level technical support to users, ensuring a smooth operation of IT infrastructure, and resolving hardware and software issues.",
+      "highlights": [
         "Provide timely and efficient technical support to users across multiple locations, platforms, and technologies.",
         "Track IT incidents and service requests, prioritize issues, and escalate as needed.",
         "Administration and maintenance of IT tools and services including on-premises and cloud resources, Active Directory, Microsoft 365, SharePoint Online, software applications, hardware and AV equipment.",
@@ -82,46 +143,46 @@ export const resumeData = {
         "Assist in the deployment and configuration of new IT and Security software and hardware.",
         "Work with the Information Security Manager to ensure adherence to security policies and procedures.",
         "Assist in the investigation and resolution of security incidents, such as malware attacks and phishing attempts.",
-        "Manage and support mobility fleet including mobile devices, tablets, and related MDM solutions.",
+        "Manage and support mobility fleet including mobile devices, tablets, and related MDM solutions."
       ],
-      highlighted: true,
+      "highlighted": true
     },
     {
-      title: "IT Support Analyst (Contract)",
-      company: "JD Sports Australia and New Zealand",
-      period: "Oct 2024 - Nov 2024",
-      location: "Leppington, NSW, Australia",
-      description: "Recruited to support and manage IT issues at JD stores, Warehouse and Corporate users",
-      highlights: [
+      "title": "IT Support Analyst (Contract)",
+      "company": "JD Sports Australia and New Zealand",
+      "period": "Oct 2024 - Nov 2024",
+      "location": "Leppington, NSW, Australia",
+      "description": "Recruited to support and manage IT issues at JD stores, Warehouse and Corporate users",
+      "highlights": [
         "Deliver technical support to JD Sports stores, warehouses, and corporate users, resolving technical issues across POS systems, store networks, and mobile devices.",
         "Provide support for instore IT equipment, including setup and troubleshooting for computers, LAN/Wi-Fi, and mobile devices.",
         "Assisted in new store setups by configuring networks, deploying software, and enrolling devices through Intune, ensuring seamless operations.",
         "Managed corporate IT support by troubleshooting hardware, software, and network issues, and configuring meeting room technology.",
         "Maintained IT asset inventory and administered systems including Office365, Active Directory, and Jira Service Management.",
-        "Documented support processes, contributed to user training materials, and identified opportunities for IT service improvements.",
+        "Documented support processes, contributed to user training materials, and identified opportunities for IT service improvements."
       ],
-      highlighted: true,
+      "highlighted": true
     },
     {
-      title: "EME Engineer",
-      company: "Nokia Solutions & Networks (Contract)",
-      period: "Aug 2022 - Jul 2024",
-      location: "Macquarie Park, NSW, Australia",
-      description: "Recruited as EME Engineer to assess compliance and mitigate the wireless telecommunication sites.",
-      highlights: [
+      "title": "EME Engineer",
+      "company": "Nokia Solutions & Networks (Contract)",
+      "period": "Aug 2022 - Jul 2024",
+      "location": "Macquarie Park, NSW, Australia",
+      "description": "Recruited as EME Engineer to assess compliance and mitigate the wireless telecommunication sites.",
+      "highlights": [
         "Assessed wireless telecommunication sites for EME compliance, providing solutions to reduce risks in mobile carrier installations.",
         "Reviewed design documents, including Antenna Systems and Plumbing Diagrams.",
-        "Conducted site visits and created site drawings using RF modelling software (IXUS), applying detailed technical skills.",
+        "Conducted site visits and created site drawings using RF modelling software (IXUS), applying detailed technical skills."
       ],
-      highlighted: false,
+      "highlighted": false
     },
     {
-      title: "IT Support Specialist",
-      company: "Juniper Networks Pty Ltd (Contract)",
-      period: "Nov 2018 - Oct 2020",
-      location: "North Sydney, NSW, Australia",
-      description: "Recruited to support and manage onsite/remote users and IT services in Juniper Networks",
-      highlights: [
+      "title": "IT Support Specialist",
+      "company": "Juniper Networks Pty Ltd (Contract)",
+      "period": "Nov 2018 - Oct 2020",
+      "location": "North Sydney, NSW, Australia",
+      "description": "Recruited to support and manage onsite/remote users and IT services in Juniper Networks",
+      "highlights": [
         "Provided dedicated support on-site and remote to users in the APAC region, addressing day-to-day technical issues efficiently through Onsite Support and the Connect Online Global Service Desk System.",
         "Assisted in monitoring and maintenance of AV equipment on conference rooms.",
         "Supported Mobile Device Management using Intune and supported Mobility Plan Services.",
@@ -130,34 +191,44 @@ export const resumeData = {
         "Managed inventory and facilitated hardware procurement, ensuring the meticulous upkeep of the asset database.",
         "Provided basic support of web-based applications and troubleshooting various used software to end-users like SAP, Salesforce, antivirus McAfee, Pulse VPN, O365 and others.",
         "Utilized ServiceNow ticketing system to proactively manage and own incidents and requests.",
-        "Conducted training sessions for new hires during their IT induction.",
+        "Conducted training sessions for new hires during their IT induction."
       ],
-      highlighted: true,
+      "highlighted": true
     },
     {
-      title: "Systems Engineer",
-      company: "Sublime International Pvt Ltd",
-      period: "Jan 2016 - Aug 2016",
-      location: "Kathmandu, Nepal",
-      description: "Recruited as System Engineer to configure, support and manage Security System of clients.",
-      highlights: [
+      "title": "Systems Engineer",
+      "company": "Sublime International Pvt Ltd",
+      "period": "Jan 2016 - Aug 2016",
+      "location": "Kathmandu, Nepal",
+      "description": "Recruited as System Engineer to configure, support and manage Security System of clients.",
+      "highlights": [
         "Oversaw the technical department, managing the installation, troubleshooting and configuration of various Security Systems.",
         "Conducted training sessions for the Marketing and Sales teams, providing comprehensive technical specifications.",
         "Ensured adherence to precise product quality and specifications required by clients.",
         "Conducted site surveys and system planning, meticulously studying customer requirements.",
-        "Provided leadership to technicians during on-site operations.",
+        "Provided leadership to technicians during on-site operations."
       ],
-      highlighted: false,
-    },
+      "highlighted": false
+    }
   ],
-  education: [
+  "education": [
     {
-      degree: "Master of Engineering",
-      major: "Telecommunication",
-      subMajor: "Cybersecurity",
-      institution: "University of Technology Sydney",
-      year: "2018",
+      "degree": "Master of Engineering",
+      "major": "Telecommunication",
+      "subMajor": "Cybersecurity",
+      "institution": "University of Technology Sydney",
+      "year": "2018"
     },
+    {
+      "degree": "Bachelors of Engineering",
+      "major": "Electronics and Communication",
+      "institution": "Kathmandu Engineering College",
+      "year": "2015"
+    }
   ],
-  languages: ["English", "Nepali", "Newari"],
+  "languages": [
+    "English",
+    "Nepali",
+    "Newari"
+  ]
 };
