@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Save, ArrowLeft, Plus, X, Github, Settings, Loader2, Lock } from "lucide-react";
+import { Save, ArrowLeft, Plus, X, Github, Settings, Loader2, Lock, FolderGit2, Calendar, Award, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { resumeData as initialData } from "@/data/resumeData";
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +17,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 // Define Types
 interface ResumeData {
@@ -34,11 +40,14 @@ interface ResumeData {
   coreAbilities: string[];
   experience: any[];
   education: any[];
-  certifications: any[];
+  certifications: {
+    completed: { name: string; code: string; issuer: string }[];
+    studying: { name: string; code: string; issuer: string }[];
+  };
   languages: string[];
   projects?: {
-    current: any[];
-    completed: any[];
+    current: { title: string; description: string; type: string; details?: string }[];
+    completed: { title: string; description: string; type: string; details?: string }[];
   };
 }
 
@@ -51,7 +60,19 @@ const Admin = () => {
   const [authError, setAuthError] = useState(false);
 
   // -- Data State --
-  const [data, setData] = useState<ResumeData>(initialData);
+  // Initialize with safe defaults for new structure
+  const [data, setData] = useState<ResumeData>(() => {
+    // Ensure nested objects exist to prevent runtime errors if data file is partial
+    const safeData = { ...initialData } as unknown as ResumeData;
+    if (!safeData.certifications || Array.isArray(safeData.certifications)) {
+      safeData.certifications = { completed: [], studying: [] };
+    }
+    if (!safeData.projects) {
+      safeData.projects = { current: [], completed: [] };
+    }
+    return safeData;
+  });
+
   const [newAbility, setNewAbility] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -79,7 +100,6 @@ const Admin = () => {
 
   const handleLogin = (e?: React.FormEvent) => {
     e?.preventDefault();
-    // Default password check
     if (passwordInput === "admin123") {
       setIsAuthenticated(true);
       sessionStorage.setItem("admin_auth", "true");
@@ -97,7 +117,7 @@ const Admin = () => {
     toast({ title: "Settings Saved", description: "Your GitHub configuration has been saved locally." });
   };
 
-  // --- Handlers ---
+  // --- Generic Handlers ---
   const handleBasicInfoChange = (field: string, value: string) => {
     if (field.includes(".")) {
       const [parent, child] = field.split(".");
@@ -113,6 +133,9 @@ const Admin = () => {
     }
   };
 
+  // --- State Handlers for specific sections ---
+
+  // Experience
   const handleExperienceChange = (index: number, field: string, value: string | boolean) => {
     setData((prev) => ({
       ...prev,
@@ -122,7 +145,6 @@ const Admin = () => {
     }));
   };
 
-  // Highlights / Responsibilities
   const handleAddHighlight = (jobIndex: number) => {
     const newHighlights = [...data.experience[jobIndex].highlights, "New responsibility..."];
     const newExperience = [...data.experience];
@@ -142,6 +164,31 @@ const Admin = () => {
     setData({ ...data, experience: newExperience });
   };
 
+  const handleAddNewJob = () => {
+    setData(prev => ({
+      ...prev,
+      experience: [{
+        title: "New Role",
+        company: "Company Name",
+        period: "Present",
+        location: "Location",
+        description: "Job description...",
+        highlights: ["Key responsibility 1"],
+        highlighted: false
+      }, ...prev.experience]
+    }))
+  };
+
+  const handleDeleteJob = (index: number) => {
+    if (confirm("Are you sure you want to delete this job?")) {
+      setData(prev => ({
+        ...prev,
+        experience: prev.experience.filter((_, i) => i !== index)
+      }))
+    }
+  };
+
+  // Abilities
   const handleAddAbility = () => {
     if (newAbility.trim()) {
       setData((prev) => ({
@@ -159,31 +206,7 @@ const Admin = () => {
     }));
   };
 
-  const handleAddNewJob = () => {
-    setData(prev => ({
-      ...prev,
-      experience: [{
-        title: "New Role",
-        company: "Company Name",
-        period: "Present",
-        location: "Location",
-        description: "Job description...",
-        highlights: ["Key responsibility 1"],
-        highlighted: false
-      }, ...prev.experience]
-    }))
-  }
-
-  const handleDeleteJob = (index: number) => {
-    if (confirm("Are you sure you want to delete this job?")) {
-      setData(prev => ({
-        ...prev,
-        experience: prev.experience.filter((_, i) => i !== index)
-      }))
-    }
-  }
-
-  // Education Handlers
+  // Education
   const handleAddEducation = () => {
     setData(prev => ({
       ...prev,
@@ -194,7 +217,7 @@ const Admin = () => {
         year: "2024"
       }]
     }))
-  }
+  };
 
   const handleDeleteEducation = (index: number) => {
     if (confirm("Delete this education entry?")) {
@@ -203,7 +226,75 @@ const Admin = () => {
         education: prev.education.filter((_, i) => i !== index)
       }))
     }
-  }
+  };
+
+  // Projects
+  const handleProjectChange = (category: 'current' | 'completed', index: number, field: string, value: string) => {
+    setData(prev => {
+      const projects = { ...prev.projects! };
+      projects[category] = projects[category].map((proj, i) =>
+        i === index ? { ...proj, [field]: value } : proj
+      );
+      return { ...prev, projects };
+    });
+  };
+
+  const handleAddProject = (category: 'current' | 'completed') => {
+    setData(prev => {
+      const projects = { ...prev.projects! };
+      projects[category] = [...projects[category], {
+        title: "New Project",
+        description: "Project description...",
+        type: "Web App",
+        details: ""
+      }];
+      return { ...prev, projects };
+    });
+  };
+
+  const handleDeleteProject = (category: 'current' | 'completed', index: number) => {
+    if (confirm(`Delete this ${category} project?`)) {
+      setData(prev => {
+        const projects = { ...prev.projects! };
+        projects[category] = projects[category].filter((_, i) => i !== index);
+        return { ...prev, projects };
+      });
+    }
+  };
+
+  // Certifications
+  const handleCertChange = (category: 'completed' | 'studying', index: number, field: string, value: string) => {
+    setData(prev => {
+      const certs = { ...prev.certifications };
+      certs[category] = certs[category].map((cert, i) =>
+        i === index ? { ...cert, [field]: value } : cert
+      );
+      return { ...prev, certifications: certs };
+    });
+  };
+
+  const handleAddCert = (category: 'completed' | 'studying') => {
+    setData(prev => {
+      const certs = { ...prev.certifications };
+      certs[category] = [...certs[category], {
+        name: "New Certification",
+        code: "CODE-123",
+        issuer: "Issuer"
+      }];
+      return { ...prev, certifications: certs };
+    });
+  };
+
+  const handleDeleteCert = (category: 'completed' | 'studying', index: number) => {
+    if (confirm(`Delete this ${category} certification?`)) {
+      setData(prev => {
+        const certs = { ...prev.certifications };
+        certs[category] = certs[category].filter((_, i) => i !== index);
+        return { ...prev, certifications: certs };
+      });
+    }
+  };
+
 
   // --- GitHub Integration ---
   const getFileSha = async () => {
@@ -350,7 +441,7 @@ const Admin = () => {
               </Button>
             </Link>
             <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-              Resume CMS <Badge variant="outline">v2.1</Badge>
+              Resume CMS <Badge variant="outline">v2.2</Badge>
             </h1>
           </div>
           <div className="flex items-center gap-2">
@@ -359,274 +450,245 @@ const Admin = () => {
             </Button>
             <Button onClick={handleSaveToGitHub} disabled={isSaving}>
               {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Github className="w-4 h-4 mr-2" />}
-              {isSaving ? "Committing..." : "Commit Changes"}
+              {isSaving ? "Publishing..." : "Publish Changes"}
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 max-w-4xl">
-        {/* Basic Info */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  value={data.name}
-                  onChange={(e) => handleBasicInfoChange("name", e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="title">Job Title</Label>
-                <Input
-                  id="title"
-                  value={data.title}
-                  onChange={(e) => handleBasicInfoChange("title", e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={data.contact.location}
-                  onChange={(e) => handleBasicInfoChange("contact.location", e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="linkedin">LinkedIn URL</Label>
-                <Input
-                  id="linkedin"
-                  value={data.contact.linkedin}
-                  onChange={(e) => handleBasicInfoChange("contact.linkedin", e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="summary">Professional Summary</Label>
-              <Textarea
-                id="summary"
-                value={data.summary}
-                onChange={(e) => handleBasicInfoChange("summary", e.target.value)}
-                rows={4}
-              />
-            </div>
-          </CardContent>
-        </Card>
+      <main className="container mx-auto px-6 py-8 max-w-5xl">
+        <Tabs defaultValue="content" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="content">Content & Experience</TabsTrigger>
+            <TabsTrigger value="pro">Projects & Certifications</TabsTrigger>
+          </TabsList>
 
-        {/* Core Abilities */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Core Abilities</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {data.coreAbilities.map((ability, index) => (
-                <Badge key={index} variant="secondary" className="gap-1 pr-1">
-                  {ability}
-                  <button
-                    onClick={() => handleRemoveAbility(index)}
-                    className="ml-1 hover:bg-destructive hover:text-destructive-foreground rounded-full p-0.5"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Add new ability..."
-                value={newAbility}
-                onChange={(e) => setNewAbility(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleAddAbility()}
-              />
-              <Button onClick={handleAddAbility} size="icon">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Experience */}
-        <Card className="mb-6">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Professional Experience</CardTitle>
-            <Button size="sm" onClick={handleAddNewJob}><Plus className="w-4 h-4 mr-2" /> Add Job</Button>
-          </CardHeader>
-          <CardContent className="space-y-8">
-            {data.experience.map((exp, jobIndex) => (
-              <div key={jobIndex} className="p-6 border border-border rounded-xl space-y-4 relative group bg-card/50">
-                {/* Delete Job Button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => handleDeleteJob(jobIndex)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-
-                <div className="flex items-center justify-between pr-8">
-                  <h3 className="font-semibold text-lg">{exp.title || "New Position"}</h3>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor={`highlighted-${jobIndex}`} className="text-sm cursor-pointer select-none">
-                      Featured Role
-                    </Label>
-                    <input
-                      type="checkbox"
-                      id={`highlighted-${jobIndex}`}
-                      checked={exp.highlighted}
-                      onChange={(e) => handleExperienceChange(jobIndex, "highlighted", e.target.checked)}
-                      className="w-4 h-4 accent-primary"
-                    />
-                  </div>
-                </div>
+          <TabsContent value="content" className="space-y-6">
+            {/* Basic Info */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Basic Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Job Title</Label>
-                    <Input
-                      value={exp.title}
-                      onChange={(e) => handleExperienceChange(jobIndex, "title", e.target.value)}
-                    />
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input id="name" value={data.name} onChange={(e) => handleBasicInfoChange("name", e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Company</Label>
-                    <Input
-                      value={exp.company}
-                      onChange={(e) => handleExperienceChange(jobIndex, "company", e.target.value)}
-                    />
+                    <Label htmlFor="title">Job Title</Label>
+                    <Input id="title" value={data.title} onChange={(e) => handleBasicInfoChange("title", e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Period</Label>
-                    <Input
-                      value={exp.period}
-                      onChange={(e) => handleExperienceChange(jobIndex, "period", e.target.value)}
-                    />
+                    <Label htmlFor="location">Location</Label>
+                    <Input id="location" value={data.contact.location} onChange={(e) => handleBasicInfoChange("contact.location", e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Location</Label>
-                    <Input
-                      value={exp.location}
-                      onChange={(e) => handleExperienceChange(jobIndex, "location", e.target.value)}
-                    />
+                    <Label htmlFor="linkedin">LinkedIn URL</Label>
+                    <Input id="linkedin" value={data.contact.linkedin} onChange={(e) => handleBasicInfoChange("contact.linkedin", e.target.value)} />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Description</Label>
-                  <Textarea
-                    value={exp.description}
-                    onChange={(e) => handleExperienceChange(jobIndex, "description", e.target.value)}
-                    rows={2}
-                  />
+                  <Label htmlFor="summary">Professional Summary</Label>
+                  <Textarea id="summary" value={data.summary} onChange={(e) => handleBasicInfoChange("summary", e.target.value)} rows={4} />
                 </div>
+              </CardContent>
+            </Card>
 
-                {/* Role Highlights / Responsibilities Editor */}
-                <div className="space-y-3 pt-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-muted-foreground">Responsibilities / Achievements</Label>
-                    <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => handleAddHighlight(jobIndex)}>
-                      <Plus className="w-3 h-3 mr-1" /> Add Point
+            {/* Core Abilities */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Core Abilities</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {data.coreAbilities.map((ability, index) => (
+                    <Badge key={index} variant="secondary" className="gap-1 pr-1">
+                      {ability}
+                      <button onClick={() => handleRemoveAbility(index)} className="ml-1 hover:bg-destructive hover:text-destructive-foreground rounded-full p-0.5"><X className="w-3 h-3" /></button>
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input placeholder="Add new ability..." value={newAbility} onChange={(e) => setNewAbility(e.target.value)} onKeyPress={(e) => e.key === "Enter" && handleAddAbility()} />
+                  <Button onClick={handleAddAbility} size="icon"><Plus className="w-4 h-4" /></Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Experience */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Professional Experience</CardTitle>
+                <Button size="sm" onClick={handleAddNewJob}><Plus className="w-4 h-4 mr-2" /> Add Job</Button>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                {data.experience.map((exp, jobIndex) => (
+                  <div key={jobIndex} className="p-6 border border-border rounded-xl space-y-4 relative group bg-card/50">
+                    <Button variant="ghost" size="icon" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteJob(jobIndex)}>
+                      <X className="w-4 h-4" />
                     </Button>
+                    <div className="flex items-center justify-between pr-8">
+                      <h3 className="font-semibold text-lg">{exp.title || "New Position"}</h3>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor={`highlighted-${jobIndex}`} className="text-sm cursor-pointer select-none">Featured Role</Label>
+                        <input type="checkbox" id={`highlighted-${jobIndex}`} checked={exp.highlighted} onChange={(e) => handleExperienceChange(jobIndex, "highlighted", e.target.checked)} className="w-4 h-4 accent-primary" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2"><Label>Job Title</Label><Input value={exp.title} onChange={(e) => handleExperienceChange(jobIndex, "title", e.target.value)} /></div>
+                      <div className="space-y-2"><Label>Company</Label><Input value={exp.company} onChange={(e) => handleExperienceChange(jobIndex, "company", e.target.value)} /></div>
+                      <div className="space-y-2"><Label>Period</Label><Input value={exp.period} onChange={(e) => handleExperienceChange(jobIndex, "period", e.target.value)} /></div>
+                      <div className="space-y-2"><Label>Location</Label><Input value={exp.location} onChange={(e) => handleExperienceChange(jobIndex, "location", e.target.value)} /></div>
+                    </div>
+                    <div className="space-y-2"><Label>Description</Label><Textarea value={exp.description} onChange={(e) => handleExperienceChange(jobIndex, "description", e.target.value)} rows={2} /></div>
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center justify-between"><Label className="text-muted-foreground">Responsibilities / Achievements</Label><Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => handleAddHighlight(jobIndex)}><Plus className="w-3 h-3 mr-1" /> Add Point</Button></div>
+                      <div className="space-y-2 pl-2 border-l-2 border-border/50">
+                        {exp.highlights.map((highlight: string, hIndex: number) => (
+                          <div key={hIndex} className="flex gap-2 items-start group/li">
+                            <div className="mt-2.5 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                            <Textarea value={highlight} onChange={(e) => handleHighlightChange(jobIndex, hIndex, e.target.value)} className="min-h-[2.5rem] py-2 resize-none text-sm" rows={1} />
+                            <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive opacity-0 group-hover/li:opacity-100 transition-opacity" onClick={() => handleDeleteHighlight(jobIndex, hIndex)}><X className="w-4 h-4" /></Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2 pl-2 border-l-2 border-border/50">
-                    {exp.highlights.map((highlight: string, hIndex: number) => (
-                      <div key={hIndex} className="flex gap-2 items-start group/li">
-                        <div className="mt-2.5 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-                        <Textarea
-                          value={highlight}
-                          onChange={(e) => handleHighlightChange(jobIndex, hIndex, e.target.value)}
-                          className="min-h-[2.5rem] py-2 resize-none text-sm"
-                          rows={1}
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-9 w-9 text-muted-foreground hover:text-destructive opacity-0 group-hover/li:opacity-100 transition-opacity"
-                          onClick={() => handleDeleteHighlight(jobIndex, hIndex)}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Education */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between"><CardTitle>Education</CardTitle><Button size="sm" onClick={handleAddEducation}><Plus className="w-4 h-4 mr-2" /> Add Education</Button></CardHeader>
+              <CardContent className="space-y-4">
+                {data.education.map((edu, index) => (
+                  <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 border-b pb-6 mb-2 last:border-0 relative group">
+                    <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteEducation(index)}><X className="w-4 h-4" /></Button>
+                    <div className="space-y-2"><Label>Degree</Label><Input value={edu.degree} onChange={e => { const newEd = [...data.education]; newEd[index].degree = e.target.value; setData({ ...data, education: newEd }); }} /></div>
+                    <div className="space-y-2"><Label>Major</Label><Input value={edu.major} onChange={e => { const newEd = [...data.education]; newEd[index].major = e.target.value; setData({ ...data, education: newEd }); }} /></div>
+                    <div className="space-y-2"><Label>Institution</Label><Input value={edu.institution} onChange={e => { const newEd = [...data.education]; newEd[index].institution = e.target.value; setData({ ...data, education: newEd }); }} /></div>
+                    <div className="space-y-2"><Label>Year</Label><Input value={edu.year} onChange={e => { const newEd = [...data.education]; newEd[index].year = e.target.value; setData({ ...data, education: newEd }); }} /></div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* SECOND TAB: PROJECTS & CERTIFICATIONS */}
+          <TabsContent value="pro" className="space-y-6">
+
+            {/* PROJECTS SECTION */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FolderGit2 className="w-5 h-5 text-primary" />
+                  <CardTitle>Projects</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                {/* Current Projects */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold flex items-center gap-2"><Calendar className="w-4 h-4 opacity-50" /> Current Projects</h3>
+                    <Button size="sm" variant="outline" onClick={() => handleAddProject('current')}><Plus className="w-4 h-4 mr-2" /> Add Current Project</Button>
+                  </div>
+                  <div className="grid gap-4">
+                    {data.projects!.current.map((proj, index) => (
+                      <div key={index} className="p-4 border rounded-lg relative group bg-card/30 hover:bg-card/50 transition-colors">
+                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteProject('current', index)}><X className="w-4 h-4" /></Button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                          <div className="space-y-1"><Label className="text-xs">Project Title</Label><Input value={proj.title} onChange={e => handleProjectChange('current', index, 'title', e.target.value)} /></div>
+                          <div className="space-y-1"><Label className="text-xs">Type</Label><Input value={proj.type} onChange={e => handleProjectChange('current', index, 'type', e.target.value)} /></div>
+                        </div>
+                        <div className="space-y-1 mb-2"><Label className="text-xs">Description</Label><Input value={proj.description} onChange={e => handleProjectChange('current', index, 'description', e.target.value)} /></div>
+                        <div className="space-y-1"><Label className="text-xs">Details/Notes (Optional)</Label><Textarea value={proj.details || ""} onChange={e => handleProjectChange('current', index, 'details', e.target.value)} rows={2} className="text-xs" /></div>
                       </div>
                     ))}
-                    {exp.highlights.length === 0 && (
-                      <p className="text-sm text-muted-foreground italic">No responsibilities listed.</p>
-                    )}
                   </div>
                 </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
 
-        {/* Education (Editable now) */}
-        <Card className="mb-6">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Education</CardTitle>
-            <Button size="sm" onClick={handleAddEducation}><Plus className="w-4 h-4 mr-2" /> Add Education</Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {data.education.map((edu, index) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 border-b pb-6 mb-2 last:border-0 relative group">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10"
-                  onClick={() => handleDeleteEducation(index)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-                <div className="space-y-2">
-                  <Label>Degree</Label>
-                  <Input
-                    value={edu.degree}
-                    onChange={e => {
-                      const newEd = [...data.education];
-                      newEd[index].degree = e.target.value;
-                      setData({ ...data, education: newEd });
-                    }}
-                  />
+                <div className="border-t border-border my-4"></div>
+
+                {/* Completed Projects */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold flex items-center gap-2"><FolderGit2 className="w-4 h-4 opacity-50" /> Completed Projects</h3>
+                    <Button size="sm" variant="outline" onClick={() => handleAddProject('completed')}><Plus className="w-4 h-4 mr-2" /> Add Completed Project</Button>
+                  </div>
+                  <div className="grid gap-4">
+                    {data.projects!.completed.map((proj, index) => (
+                      <div key={index} className="p-4 border rounded-lg relative group bg-card/30 hover:bg-card/50 transition-colors">
+                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteProject('completed', index)}><X className="w-4 h-4" /></Button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                          <div className="space-y-1"><Label className="text-xs">Project Title</Label><Input value={proj.title} onChange={e => handleProjectChange('completed', index, 'title', e.target.value)} /></div>
+                          <div className="space-y-1"><Label className="text-xs">Type</Label><Input value={proj.type} onChange={e => handleProjectChange('completed', index, 'type', e.target.value)} /></div>
+                        </div>
+                        <div className="space-y-1"><Label className="text-xs">Description</Label><Input value={proj.description} onChange={e => handleProjectChange('completed', index, 'description', e.target.value)} /></div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Major</Label>
-                  <Input
-                    value={edu.major}
-                    onChange={e => {
-                      const newEd = [...data.education];
-                      newEd[index].major = e.target.value;
-                      setData({ ...data, education: newEd });
-                    }}
-                  />
+              </CardContent>
+            </Card>
+
+            {/* CERTIFICATIONS SECTION */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Award className="w-5 h-5 text-primary" />
+                  <CardTitle>Certifications</CardTitle>
                 </div>
-                <div className="space-y-2">
-                  <Label>Institution</Label>
-                  <Input
-                    value={edu.institution}
-                    onChange={e => {
-                      const newEd = [...data.education];
-                      newEd[index].institution = e.target.value;
-                      setData({ ...data, education: newEd });
-                    }}
-                  />
+              </CardHeader>
+              <CardContent className="space-y-8">
+                {/* Completed Certs */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold flex items-center gap-2 text-green-600"><Award className="w-4 h-4" /> Completed</h3>
+                    <Button size="sm" variant="outline" onClick={() => handleAddCert('completed')}><Plus className="w-4 h-4 mr-2" /> Add Certificate</Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {data.certifications.completed.map((cert, index) => (
+                      <div key={index} className="p-4 border rounded-lg relative group bg-green-500/5 border-green-200/50">
+                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteCert('completed', index)}><X className="w-4 h-4" /></Button>
+                        <div className="space-y-2">
+                          <div className="space-y-1"><Label className="text-xs">Code</Label><Input value={cert.code} onChange={e => handleCertChange('completed', index, 'code', e.target.value)} className="h-8" /></div>
+                          <div className="space-y-1"><Label className="text-xs">Name</Label><Input value={cert.name} onChange={e => handleCertChange('completed', index, 'name', e.target.value)} className="h-8" /></div>
+                          <div className="space-y-1"><Label className="text-xs">Issuer</Label><Input value={cert.issuer} onChange={e => handleCertChange('completed', index, 'issuer', e.target.value)} className="h-8" /></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Year</Label>
-                  <Input
-                    value={edu.year}
-                    onChange={e => {
-                      const newEd = [...data.education];
-                      newEd[index].year = e.target.value;
-                      setData({ ...data, education: newEd });
-                    }}
-                  />
+
+                <div className="border-t border-border my-4"></div>
+
+                {/* Studying Certs */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold flex items-center gap-2 text-blue-500"><BookOpen className="w-4 h-4" /> Currently Studying</h3>
+                    <Button size="sm" variant="outline" onClick={() => handleAddCert('studying')}><Plus className="w-4 h-4 mr-2" /> Add Study Goal</Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {data.certifications.studying.map((cert, index) => (
+                      <div key={index} className="p-4 border rounded-lg relative group bg-blue-500/5 border-blue-200/50">
+                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteCert('studying', index)}><X className="w-4 h-4" /></Button>
+                        <div className="space-y-2">
+                          <div className="space-y-1"><Label className="text-xs">Code</Label><Input value={cert.code} onChange={e => handleCertChange('studying', index, 'code', e.target.value)} className="h-8" /></div>
+                          <div className="space-y-1"><Label className="text-xs">Name</Label><Input value={cert.name} onChange={e => handleCertChange('studying', index, 'name', e.target.value)} className="h-8" /></div>
+                          <div className="space-y-1"><Label className="text-xs">Issuer</Label><Input value={cert.issuer} onChange={e => handleCertChange('studying', index, 'issuer', e.target.value)} className="h-8" /></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+
+              </CardContent>
+            </Card>
+
+          </TabsContent>
+        </Tabs>
 
         <div className="mt-8 p-4 bg-muted rounded-lg text-center text-sm text-muted-foreground">
           <p>

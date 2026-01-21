@@ -118,18 +118,22 @@ export const resumeData = {
       "Meticulous attention to detail"
     ]
   },
-  certifications: [
-    {
-      name: "Microsoft Azure Fundamentals",
-      code: "AZ-900",
-      issuer: "Microsoft",
-    },
-    {
-      name: "Microsoft 365 Fundamentals",
-      code: "MS-900",
-      issuer: "Microsoft",
-    },
-  ],
+  certifications: {
+    completed: [
+      {
+        name: "Microsoft Azure Fundamentals",
+        code: "AZ-900",
+        issuer: "Microsoft",
+      },
+    ],
+    studying: [
+      {
+        name: "Microsoft 365 Fundamentals",
+        code: "MS-900",
+        issuer: "Microsoft",
+      },
+    ],
+  },
   projects: {
     current: [
       {
