@@ -27,7 +27,7 @@ interface ResumeData {
     phone: string;
     location: string;
     linkedin: string;
-    website: string;
+    website?: string;
   };
   summary: string;
   technicalSkills: { category: string; skills: string[] }[];
@@ -36,6 +36,10 @@ interface ResumeData {
   education: any[];
   certifications: any[];
   languages: string[];
+  projects?: {
+    current: any[];
+    completed: any[];
+  };
 }
 
 const Admin = () => {
